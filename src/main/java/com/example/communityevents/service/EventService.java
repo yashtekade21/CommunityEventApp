@@ -15,22 +15,42 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+    public void autoDeleteTodayEvents() {
+        LocalDate today = LocalDate.now();
+        List<Event> todayEvents = eventRepository.findByDate(today);
+        for (Event event : todayEvents) {
+            if (!event.isDeleted()) {
+                event.setDeleted(true);
+                eventRepository.save(event);
+            }
+        }
+    }
+
     public List<Event> getEventsFiltered(String location, String category, LocalDate date) {
+        autoDeleteTodayEvents();
         if (location != null && category != null && date != null) {
-            return eventRepository.findByLocationContainingIgnoreCaseAndCategoryContainingIgnoreCaseAndDate(location, category, date);
+            return eventRepository
+                    .findByLocationContainingIgnoreCaseAndCategoryContainingIgnoreCaseAndDate(location, category, date)
+                    .stream().filter(e -> !e.isDeleted()).toList();
         } else if (location != null) {
-            return eventRepository.findByLocationContainingIgnoreCase(location);
+            return eventRepository.findByLocationContainingIgnoreCase(location)
+                    .stream().filter(e -> !e.isDeleted()).toList();
         } else if (category != null) {
-            return eventRepository.findByCategoryContainingIgnoreCase(category);
+            return eventRepository.findByCategoryContainingIgnoreCase(category)
+                    .stream().filter(e -> !e.isDeleted()).toList();
         } else if (date != null) {
-            return eventRepository.findByDate(date);
+            return eventRepository.findByDate(date)
+                    .stream().filter(e -> !e.isDeleted()).toList();
         } else {
-            return eventRepository.findAll();
+            return eventRepository.findAll()
+                    .stream().filter(e -> !e.isDeleted()).toList();
         }
     }
 
     public List<Event> searchEvents(String query) {
-        return eventRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query);
+        autoDeleteTodayEvents();
+        return eventRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query)
+                .stream().filter(e -> !e.isDeleted()).toList();
     }
 
     public Optional<Event> getEvent(Long id) {
