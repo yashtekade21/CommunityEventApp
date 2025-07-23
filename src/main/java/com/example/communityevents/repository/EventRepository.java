@@ -16,6 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByLocationContainingIgnoreCaseAndCategoryContainingIgnoreCaseAndDate(
             String location, String category, LocalDate date);
 
-    // Search bar support
     List<Event> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String title, String description);
+
+    List<Event> findByDeletedFalse();
 }
