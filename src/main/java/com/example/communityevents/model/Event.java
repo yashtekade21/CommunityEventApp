@@ -23,6 +23,7 @@ public class Event {
     private boolean free;
     private String organizer;
     private String organizerContact;
+    private boolean deleted = false;
 
     // Constructors
     public Event() {
@@ -135,5 +136,13 @@ public class Event {
 
     public void setOrganizerContact(String organizerContact) {
         this.organizerContact = organizerContact;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }
